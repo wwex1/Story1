@@ -1,0 +1,188 @@
+<div class="story_ideas_settings">
+    <div class="inline-drawer">
+        <div class="inline-drawer-toggle inline-drawer-header">
+            <b>Story1</b>
+            <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div>
+        </div>
+        <div class="inline-drawer-content">
+
+            <div class="flex-container">
+                <label class="checkbox_label flex1" for="si_enabled">
+                    <input type="checkbox" id="si_enabled" class="si_enabled" />
+                    <span>전체 활성화</span>
+                </label>
+                <select id="si_source" class="si_source text_pole flex1"></select>
+            </div>
+
+            <div class="flex-container flexFlowRowReverse" style="margin-top:6px;">
+                <button class="si_all_cache_clear menu_button">🗑️ 전체 캐시 초기화</button>
+            </div>
+
+            <hr />
+
+            <!-- 에피소드 추천 -->
+            <label class="checkbox_label" style="margin-bottom:6px;">
+                <input type="checkbox" class="si_ideas_enabled" />
+                <span><b>💡 에피소드 추천</b></span>
+            </label>
+
+            <div class="flex-container">
+                <div class="flex-container flexFlowColumn flex1">
+                    <small>개수</small>
+                    <input type="number" class="si_count text_pole" min="1" max="8" value="3" />
+                </div>
+                <div class="flex-container flexFlowColumn flex1">
+                    <small>길이</small>
+                    <select class="si_detail_level text_pole">
+                        <option value="brief">간략</option>
+                        <option value="normal">보통</option>
+                    </select>
+                </div>
+                <div class="flex-container flexFlowColumn flex1">
+                    <small>언어</small>
+                    <select class="si_lang text_pole">
+                        <option value="en">EN</option>
+                        <option value="ko">KO</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex-container flexFlowColumn">
+                <div class="flex-container">
+                    <small class="flex1">프롬프트 저장</small>
+                    <select class="si_prompt_preset text_pole flex1"></select>
+                    <button class="si_preset_load menu_button fa-solid fa-folder-open" title="불러오기"></button>
+                    <button class="si_preset_save menu_button fa-solid fa-floppy-disk" title="저장"></button>
+                    <button class="si_preset_del menu_button fa-solid fa-trash" title="삭제"></button>
+                </div>
+                <textarea class="si_prompt text_pole" rows="5" placeholder="에피소드 추천 프롬프트..."></textarea>
+                <div class="flex-container flexFlowRowReverse" style="gap:6px;">
+                    <button class="si_cache_clear menu_button">캐시 초기화</button>
+                    <button class="si_prompt_reset menu_button">설정 초기화</button>
+                </div>
+            </div>
+
+            <hr />
+
+            <!-- 전개 방향 -->
+            <label class="checkbox_label" style="margin-bottom:6px;">
+                <input type="checkbox" class="sd_develop_enabled" />
+                <span><b>🎬 전개 방향</b></span>
+            </label>
+
+            <small style="opacity:0.7;display:block;margin-bottom:6px;">
+                에피소드 추천 카드의 "🎬 전개" 버튼으로 실행됩니다. 선택한 에피소드를 여러 단계로 전개(결말 제외)하고, 영어 진행 가이드 문장을 함께 출력합니다. 한글로 생성되며 🌐 버튼으로 영어 번역이 가능합니다.
+            </small>
+
+            <div class="flex-container">
+                <div class="flex-container flexFlowColumn flex1">
+                    <small>방향 개수</small>
+                    <input type="number" class="sd_count text_pole" min="1" max="5" value="2" />
+                </div>
+                <div class="flex-container flexFlowColumn flex1">
+                    <small>단계 수</small>
+                    <input type="number" class="sd_steps text_pole" min="2" max="6" value="3" />
+                </div>
+            </div>
+
+            <div class="flex-container flexFlowColumn">
+                <textarea class="sd_prompt text_pole" rows="5" placeholder="전개 방향 프롬프트..."></textarea>
+                <div class="flex-container flexFlowRowReverse" style="gap:6px;">
+                    <button class="sd_cache_clear menu_button">캐시 초기화</button>
+                    <button class="sd_prompt_reset menu_button">설정 초기화</button>
+                </div>
+            </div>
+
+            <hr />
+
+            <!-- 선택지 생성 -->
+            <label class="checkbox_label" style="margin-bottom:6px;">
+                <input type="checkbox" class="sc_choices_enabled" />
+                <span><b>🎯 선택지 생성</b></span>
+            </label>
+
+            <div class="flex-container">
+                <div class="flex-container flexFlowColumn flex1">
+                    <small>개수</small>
+                    <input type="number" class="sc_count text_pole" min="1" max="8" value="3" />
+                </div>
+                <div class="flex-container flexFlowColumn flex1">
+                    <small>길이</small>
+                    <select class="sc_detail_level text_pole">
+                        <option value="brief">간략</option>
+                        <option value="normal">보통</option>
+                    </select>
+                </div>
+                <div class="flex-container flexFlowColumn flex1">
+                    <small>언어</small>
+                    <select class="sc_lang text_pole">
+                        <option value="en">EN</option>
+                        <option value="ko">KO</option>
+                        <option value="ko-en">KO (대사 한영병기)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex-container flexFlowColumn">
+                <div class="flex-container">
+                    <small class="flex1">프롬프트 저장</small>
+                    <select class="sc_prompt_preset text_pole flex1"></select>
+                    <button class="sc_preset_load menu_button fa-solid fa-folder-open" title="불러오기"></button>
+                    <button class="sc_preset_save menu_button fa-solid fa-floppy-disk" title="저장"></button>
+                    <button class="sc_preset_del menu_button fa-solid fa-trash" title="삭제"></button>
+                </div>
+                <textarea class="sc_prompt text_pole" rows="5" placeholder="선택지 생성 프롬프트..."></textarea>
+                <div class="flex-container flexFlowRowReverse" style="gap:6px;">
+                    <button class="sc_cache_clear menu_button">캐시 초기화</button>
+                    <button class="sc_prompt_reset menu_button">설정 초기화</button>
+                </div>
+            </div>
+
+            <hr />
+
+            <!-- 페르소나 생성 -->
+            <label class="checkbox_label" style="margin-bottom:6px;">
+                <input type="checkbox" class="sp_persona_enabled" />
+                <span><b>👤 페르소나 생성</b></span>
+            </label>
+
+            <div class="flex-container">
+                <div class="flex-container flexFlowColumn flex1">
+                    <small>출력 언어</small>
+                    <select class="sp_lang text_pole">
+                        <option value="en">EN</option>
+                        <option value="ko">KO</option>
+                    </select>
+                </div>
+                <div class="flex-container flexFlowColumn flex1">
+                    <small>출력 길이</small>
+                    <select class="sp_detail text_pole">
+                        <option value="brief">간략</option>
+                        <option value="normal">보통</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex-container flexFlowRowReverse" style="margin-top:6px;">
+                <button class="sp_cache_clear menu_button">캐시 초기화</button>
+            </div>
+
+            <hr />
+
+            <!-- 그리팅 생성 -->
+            <label class="checkbox_label" style="margin-bottom:6px;">
+                <input type="checkbox" class="sg_greeting_enabled" />
+                <span><b>💬 그리팅 생성</b></span>
+            </label>
+
+            <small style="opacity:0.7;display:block;margin-bottom:6px;">
+                현재 활성 프리셋 + 캐릭터 카드 + 페르소나 + 월드인포 + 기존 그리팅을 모두 참고합니다. 출력 언어/화법/시점은 활성 프리셋과 캐릭터 카드를 따릅니다. (위쪽 API 소스 설정과 무관 — 항상 메인 활성 프리셋 사용)
+            </small>
+
+            <div class="flex-container flexFlowRowReverse" style="margin-top:6px;">
+                <button class="sg_cache_clear menu_button">캐시 초기화</button>
+            </div>
+
+        </div>
+    </div>
+</div>
