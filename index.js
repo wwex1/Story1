@@ -216,13 +216,13 @@ function findProfileById(id) {
 
 // ─── sendRequest 공통 ───
 
-async function sendProfileRequest(msgs, maxTokens, withPreset = false) {
+async function sendProfileRequest(msgs, maxTokens) {
     const cmrs = ctx.ConnectionManagerRequestService;
     if (!cmrs) throw new Error('Connection Manager 미로드');
 
     const optionSets = [
-        { stream: false, extractData: true, includePreset: withPreset, includeInstruct: false },
-        { streaming: false, extractData: true, includePreset: withPreset, includeInstruct: false },
+        { stream: false, extractData: true, includePreset: false, includeInstruct: false },
+        { streaming: false, extractData: true, includePreset: false, includeInstruct: false },
         { stream: false, extractData: true },
         { streaming: false },
     ];
@@ -623,8 +623,7 @@ async function generate(isRetry, mode) {
         } else {
             const msgs = await gatherMessages(lastBot);
             msgs.push({ role: 'user', content: instruction });
-            // 에피추천만 프로필 프리셋 포함 (참메모리 등 프리셋 항목 같이 읽기)
-            raw = await sendProfileRequest(msgs, 4000, mode === 'ideas');
+            raw = await sendProfileRequest(msgs, 4000);
         }
         const items = mode === 'choices' ? parseChoices(raw) : parseIdeas(raw);
         if (!items?.length) throw new Error('파싱 실패');
@@ -668,8 +667,7 @@ async function generateDevelop(episode, isRetry) {
         } else {
             const msgs = await gatherMessages(lastBot);
             msgs.push({ role: 'user', content: instruction });
-            // 전개 방향도 프로필 프리셋 포함 (참메모리 등)
-            raw = await sendProfileRequest(msgs, 4000, true);
+            raw = await sendProfileRequest(msgs, 4000);
         }
         const directions = parseDevelop(raw);
         if (!directions?.length) throw new Error('파싱 실패');
