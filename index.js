@@ -113,6 +113,7 @@ let ctx = null;
 let generating = false;
 let personaInputs = {};
 let greetingInputs = {};
+let ideasRequest = ''; // 에피소드 추천 사용자 요청 (세션 한정, 저장 안 함, 채팅 변경 시 비움)
 
 function persist() { ctx.saveSettingsDebounced(); }
 
@@ -523,7 +524,7 @@ function bindEvents() {
         $('#extensionsMenu').hide(); activeMode = 'ideas';
         const cache = peekCache('ideas');
         if (cache) { renderBlock('ideas'); scrollToBlock(); return; }
-        await generate(false, 'ideas');
+        showIdeasForm();
     });
 
     const choicesBtn = document.createElement('div');
@@ -581,6 +582,7 @@ function bindEvents() {
     }
 
     ctx.eventSource.on(event_types.CHAT_CHANGED, () => {
+        ideasRequest = '';
         removeBlock();
     });
 }
@@ -1552,7 +1554,12 @@ function buildIdeasInstruction() {
         for (const ideas of cache.history) { for (const idea of ideas) { if (idea.title) prevTitles.push(idea.title); } }
         if (prevTitles.length > 0) avoidNote = `\n\n⚠️ IMPORTANT: The following ideas were already suggested. Do NOT repeat or closely resemble any of them. Come up with completely different ideas:\n${prevTitles.map(t => `- ${t}`).join('\n')}`;
     }
-    return `${ctx.substituteParams(cfg.prompt)}\n\n${langNote}${avoidNote}\n\nOUTPUT FORMAT - Use this EXACT structure:\n<suggestions>\n[Title of idea 1]\nDescription here.\n\n[Title of idea 2]\nDescription here.\n</suggestions>\n\nRules:\n- Exactly ${cfg.count} suggestions\n- ${detailMap[cfg.detailLevel] || detailMap.brief}\n- Title in [brackets], description on next lines\n- Wrap in <suggestions>...</suggestions>\n- NO text outside the tags`;
+    let requestNote = '';
+    const req = (ideasRequest || '').trim();
+    if (req) {
+        requestNote = `\n\n=== USER REQUEST (high priority) ===\nThe user wants the episode suggestions to be based on the following request. Strongly prioritize and reflect this in ALL suggestions, while keeping them plausible within the established story, characters, and world:\n"${ctx.substituteParams(req)}"`;
+    }
+    return `${ctx.substituteParams(cfg.prompt)}\n\n${langNote}${requestNote}${avoidNote}\n\nOUTPUT FORMAT - Use this EXACT structure:\n<suggestions>\n[Title of idea 1]\nDescription here.\n\n[Title of idea 2]\nDescription here.\n</suggestions>\n\nRules:\n- Exactly ${cfg.count} suggestions\n- ${detailMap[cfg.detailLevel] || detailMap.brief}\n- Title in [brackets], description on next lines\n- Wrap in <suggestions>...</suggestions>\n- NO text outside the tags`;
 }
 
 function buildChoicesInstruction() {
@@ -1694,6 +1701,23 @@ function renderBlock(mode) {
     right.append('<button class="si-block-btn si-do-delete" title="전체 삭제">🗑️</button>');
     head.append(right); block.append(head);
 
+    // 에피소드 추천: 요청 입력 바 (카드 위 상시 표시, 세션 한정)
+    if (!isChoices) {
+        const reqBar = $(`<div class="si-request-bar">
+            <textarea class="si-request-input" rows="1" placeholder="원하는 방향/소재를 적으면 그걸 토대로 추천 (비우면 자동). 입력 후 🔄 또는 ↻ 로 재생성"></textarea>
+            <button class="si-request-go" title="이 요청으로 재생성">↻</button>
+        </div>`);
+        const reqInput = reqBar.find('.si-request-input');
+        reqInput.val(ideasRequest);
+        reqInput.on('input', function () { ideasRequest = $(this).val(); });
+        reqBar.find('.si-request-go').on('click', async () => {
+            if (generating) return;
+            ideasRequest = reqInput.val();
+            await generate(true, mode);
+        });
+        block.append(reqBar);
+    }
+
     const cardsWrap = $('<div id="si-cards-area"></div>'); const cards = $('<div class="si-cards"></div>');
     items.forEach((item, i) => {
         const bodyText = item.body || '';
@@ -1722,6 +1746,40 @@ function renderBlock(mode) {
         const key = chatKey(); const cacheObj = mode === 'choices' ? cfg.choicesCache : cfg.cache;
         if (key && cacheObj[key]) { delete cacheObj[key]; persist(); } removeBlock(); toastr.success('전체 삭제됨');
     });
+}
+
+function showIdeasForm() {
+    removeBlock();
+    activeMode = 'ideas';
+    const block = $('<div id="si-block" class="si-block"></div>');
+    const head = $('<div class="si-block-head"></div>');
+    head.append('<span class="si-block-title">💡 에피소드 추천</span>');
+    const closeBtn = $('<button class="si-block-btn" title="닫기">✕</button>');
+    closeBtn.on('click', removeBlock);
+    head.append(closeBtn);
+    block.append(head);
+
+    const form = $(`
+        <div class="pg-form">
+            <div class="pg-form-field">
+                <small>원하는 요청 (비우면 자동 추천)</small>
+                <textarea class="si-request-input" rows="3" placeholder="예: 제네비브가 위험에 처하는 전개 / 가벼운 일상 에피소드 위주 / 비우면 알아서 추천">${esc(ideasRequest || '')}</textarea>
+            </div>
+            <div class="pg-form-actions">
+                <button class="si-block-btn pg-btn-cancel">취소</button>
+                <button class="pg-btn pg-btn-primary pg-btn-generate">생성</button>
+            </div>
+        </div>
+    `);
+    form.find('.pg-btn-cancel').on('click', removeBlock);
+    form.find('.pg-btn-generate').on('click', async () => {
+        if (generating) return;
+        ideasRequest = form.find('.si-request-input').val();
+        await generate(false, 'ideas');
+    });
+    block.append(form);
+    $('#chat').append(block);
+    scrollToBlock();
 }
 
 function showLoading(mode) {
